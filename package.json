@@ -1,0 +1,20 @@
+{
+  "name": "tvs",
+  "module": "tvs",
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "latest",
+    "bun-types": "^1.2.2"
+  },
+  "peerDependencies": {
+    "typescript": "^5.7.3"
+  },
+  "dependencies": {
+    "@aws-sdk/client-athena": "^3.749.0",
+    "@aws-sdk/client-glue": "^3.749.0",
+    "@aws-sdk/client-s3": "^3.749.0",
+    "@elysiajs/cors": "^1.2.0",
+    "@elysiajs/swagger": "^1.2.0",
+    "elysia": "^1.2.12"
+  }
+}
