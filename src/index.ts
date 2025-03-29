@@ -18,6 +18,13 @@ const app = new Elysia()
       }
     }
   }))
+  // Add a root route
+  .get('/', () => {
+    return {
+      message: 'Welcome to AWS Query API',
+      docs: '/swagger'
+    }
+  })
   // Add routes
   .use(healthRouter)
   .use(apiRouter)
@@ -35,7 +42,7 @@ const app = new Elysia()
   })
 
 // Start the server
-const port = process.env.PORT || 3000
+const port = process.env.PORT || 3001
 app.listen(port, () => {
   console.log(`🦊 Server running at http://localhost:${port}`)
 }) 
