@@ -45,6 +45,7 @@ class AthenaService {
       const results = await this.athenaClient.send(
         new GetQueryResultsCommand({ QueryExecutionId })
       )
+      console.log(results)
 
       return results.ResultSet
     } catch (error) {

@@ -23,6 +23,16 @@ export class QueryController {
     const query = `SELECT DISTINCT session_id FROM "silver"."ems" ORDER BY session_id;`
     return await athenaService.executeQuery(query)
   }
+
+  async getScreenNavigationData(sessionId: string, limit: number = 1000, offset: number = 0) {
+    const query = `SELECT * FROM "raw"."sceennavigation" WHERE session_id = '${sessionId}' LIMIT ${limit} ;`
+    return await athenaService.executeQuery(query)
+  }
+
+  async getSessionEmsDtcData(sessionId: string, limit: number = 1000, offset: number = 0) {
+    const query = `SELECT * FROM "silver"."emsdtc" WHERE session_id = '${sessionId}' LIMIT ${limit} ;`
+    return await athenaService.executeQuery(query)
+  }
 }
 
 export const queryController = new QueryController() 
