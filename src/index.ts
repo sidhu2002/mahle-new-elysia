@@ -9,7 +9,12 @@ import { queryRouter } from './routes/query.routes'
 
 const app = new Elysia()
   // Add middleware
-  .use(cors())
+  .use(cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS'],
+    allowedHeaders: '*',
+    credentials: true
+  }))
   .use(swagger({
     documentation: {
       info: {
