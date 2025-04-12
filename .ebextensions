@@ -1,0 +1,20 @@
+option_settings:
+  aws:elasticbeanstalk:application:environment:
+    PORT: 8080
+    NODE_ENV: production
+  aws:elasticbeanstalk:container:nodejs:
+    NodeCommand: "~/.bun/bin/bun run src/index.ts"
+    ProxyServer: nginx
+  aws:elasticbeanstalk:environment:proxy:staticfiles:
+    /public: public
+
+files:
+  "/opt/elasticbeanstalk/hooks/appdeploy/post/99_make_bun_executable.sh":
+    mode: "000755"
+    owner: root
+    group: root
+    content: |
+      #!/bin/bash
+      chmod +x /var/app/current/.platform/hooks/predeploy/01_install_bun.sh
+
+web: ~/.bun/bin/bun run src/index.ts

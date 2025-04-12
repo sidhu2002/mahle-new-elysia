@@ -43,6 +43,7 @@ const app = new Elysia()
 
 // Start the server
 const port = process.env.PORT || 3001
+// app.config.host = '0.0.0.0'
 app.listen(port, () => {
-  console.log(`🦊 Server running at http://localhost:${port}`)
-}) 
+  console.log(`🦊 Server running at http://0.0.0.0:${port}`)
+})

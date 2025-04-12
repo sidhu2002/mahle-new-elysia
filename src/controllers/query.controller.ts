@@ -25,12 +25,18 @@ export class QueryController {
   }
 
   async getScreenNavigationData(sessionId: string, limit: number = 1000, offset: number = 0) {
-    const query = `SELECT * FROM "raw"."sceennavigation" WHERE session_id = '${sessionId}' LIMIT ${limit} ;`
+    const query = `SELECT * FROM "raw"."screennavigation" WHERE session_id = '${sessionId}' LIMIT ${limit} ;`
     return await athenaService.executeQuery(query)
   }
 
   async getSessionEmsDtcData(sessionId: string, limit: number = 1000, offset: number = 0) {
     const query = `SELECT * FROM "silver"."emsdtc" WHERE session_id = '${sessionId}' LIMIT ${limit} ;`
+    return await athenaService.executeQuery(query)
+  }
+
+  async getEventLoggingData(sessionId: string, limit: number = 1000, offset: number = 0) {
+    const query = `SELECT * FROM "raw"."eventlogging" WHERE session_id = '${sessionId}' LIMIT ${limit} ;`
+    console.log(`Executing query for session_id: ${sessionId}, limit: ${limit}, offset: ${offset}`);
     return await athenaService.executeQuery(query)
   }
 }

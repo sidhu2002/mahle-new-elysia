@@ -307,6 +307,60 @@ export const queryRouter = new Elysia({ prefix: '/query' })
     }
   }) 
 
+  .post('/event-logging', async ({ body }) => {
+    try {
+      const result = await queryController.getEventLoggingData(body.session_id, body.limit || 100, body.offset || 0)
+      
+      if (!result?.Rows?.length) {
+        return { 
+          success: false, 
+          error: 'No event logging data found' 
+        }
+      }
+
+      // Transform the Athena result into a more friendly format
+      const headers = result.Rows[0].Data?.map(col => col.VarCharValue) || []
+      const rows = result.Rows.slice(1).map((row: AthenaRow) => {
+        const rowData: Record<string, string | number | null> = {}
+        row.Data?.forEach((col, index) => {
+          const header = headers[index]
+          if (!header) return
+
+          // Keep all values as their original string format
+          rowData[header] = col.VarCharValue
+        })
+        return rowData
+      })
+
+      return { 
+        success: true, 
+        data: rows,
+        metadata: {
+          total: rows.length,
+          session_id: body.session_id,
+          limit: body.limit || 100,
+          offset: body.offset || 0
+        }
+      }
+    } catch (error: any) {
+      console.error('Event logging data error:', error)
+      return { 
+        success: false, 
+        error: error?.message || 'Unknown error' 
+      }
+    }
+  }, {
+    body: t.Object({
+      session_id: t.String(),
+      limit: t.Optional(t.Number({ default: 100 })),
+      offset: t.Optional(t.Number({ default: 0 }))
+    }),
+    detail: {
+      summary: 'Get event logging data by session ID',
+      tags: ['Query']
+    }
+  }) 
+
   .post('/session-emsdtc', async ({ body }) => {
     try {
       const query = `
