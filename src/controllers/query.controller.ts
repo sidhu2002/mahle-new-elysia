@@ -14,13 +14,13 @@ export class QueryController {
     return await athenaService.executeQuery(query)
   }
 
-  async getSessionData(sessionId: string, limit: number = 1000) {
-    const query = `SELECT * FROM "silver"."ems" WHERE session_id = '${sessionId}' LIMIT ${limit};`
+  async getSessionData(sessionId: string, limit: number = 0) {
+    const query = `SELECT * FROM "silver"."ems_liveparam" WHERE session_id = '${sessionId}' LIMIT ${limit};`
     return await athenaService.executeQuery(query)
   }
 
   async getAllSessionIds() {
-    const query = `SELECT DISTINCT session_id FROM "silver"."ems" ORDER BY session_id;`
+    const query = `SELECT DISTINCT session_id FROM "raw"."datacollection" ORDER BY session_id;`
     return await athenaService.executeQuery(query)
   }
 

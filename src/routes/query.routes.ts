@@ -71,21 +71,14 @@ export const queryRouter = new Elysia({ prefix: '/query' })
         }
       }
 
-      // Transform the Athena result into a more friendly format
+      // Transform Athena result to object format while preserving original values
       const headers = result.Rows[0].Data?.map(col => col.VarCharValue) || []
       const rows = result.Rows.slice(1).map((row: AthenaRow) => {
-        const rowData: Record<string, string | number | null> = {}
+        const rowData: Record<string, string> = {}
         row.Data?.forEach((col, index) => {
           const header = headers[index]
           if (!header) return
-
-          let value: string | number | null = col.VarCharValue
-          if (header.endsWith('time')) {
-            value = value ? parseInt(value) : null
-          } else if (header === 'method' || header === 'decimal_response_code') {
-            value = value ? parseInt(value) : null
-          }
-          rowData[header] = value
+          rowData[header] = col.VarCharValue
         })
         return rowData
       })
@@ -318,15 +311,14 @@ export const queryRouter = new Elysia({ prefix: '/query' })
         }
       }
 
-      // Transform the Athena result into a more friendly format
+      // Transform Athena result to object format while preserving original values
       const headers = result.Rows[0].Data?.map(col => col.VarCharValue) || []
       const rows = result.Rows.slice(1).map((row: AthenaRow) => {
-        const rowData: Record<string, string | number | null> = {}
+        const rowData: Record<string, string> = {}
         row.Data?.forEach((col, index) => {
           const header = headers[index]
           if (!header) return
-
-          // Keep all values as their original string format
+          // Pass through the exact value without any transformation
           rowData[header] = col.VarCharValue
         })
         return rowData
@@ -363,37 +355,24 @@ export const queryRouter = new Elysia({ prefix: '/query' })
 
   .post('/session-emsdtc', async ({ body }) => {
     try {
-      const query = `
-        SELECT * 
-        FROM silver.emsdtc 
-        WHERE session_id = '${body.session_id}'
-        ORDER BY ems_dtc_starttime DESC
-        LIMIT ${body.limit || 100} 
-        OFFSET ${body.offset || 0}
-      `
       const result = await queryController.getSessionEmsDtcData(body.session_id, body.limit || 100, body.offset || 0)
       
       if (!result?.Rows?.length) {
         return { 
           success: false, 
-          error: 'No screen navigation data found' 
+          error: 'No emsdtc data found' 
         }
       }
 
-      // Transform the Athena result into a more friendly format
+      // Transform the Athena result while preserving original data formats
       const headers = result.Rows[0].Data?.map(col => col.VarCharValue) || []
       const rows = result.Rows.slice(1).map((row: AthenaRow) => {
-        const rowData: Record<string, string | number | null> = {}
+        const rowData: Record<string, string> = {}
         row.Data?.forEach((col, index) => {
           const header = headers[index]
           if (!header) return
-
-          let value: string | number | null = col.VarCharValue
-          // Convert time fields to numbers
-          if (header.includes('time') || header === 'processed_ts') {
-            value = value ? parseInt(value) : null
-          }
-          rowData[header] = value
+          // Keep the original string value without any parsing
+          rowData[header] = col.VarCharValue
         })
         return rowData
       })
@@ -409,7 +388,7 @@ export const queryRouter = new Elysia({ prefix: '/query' })
         }
       }
     } catch (error: any) {
-      console.error('Screen navigation data error:', error)
+      console.error('EMSDTC data error:', error)
       return { 
         success: false, 
         error: error?.message || 'Unknown error' 
@@ -422,7 +401,7 @@ export const queryRouter = new Elysia({ prefix: '/query' })
       offset: t.Optional(t.Number({ default: 0 }))
     }),
     detail: {
-      summary: 'Get screen navigation data by session ID',
+      summary: 'Get EMSDTC data by session ID',
       tags: ['Query']
     }
   }) 

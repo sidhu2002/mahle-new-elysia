@@ -16,6 +16,7 @@ class AthenaService {
   async executeQuery(query: string) {
     try {
       // Start query execution
+      console.log("starting",query)
       const startQueryCommand = new StartQueryExecutionCommand({
         QueryString: query,
         ResultConfiguration: {
