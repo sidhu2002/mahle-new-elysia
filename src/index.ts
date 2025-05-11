@@ -19,7 +19,7 @@ const app = new Elysia()
     documentation: {
       info: {
         title: 'AWS Query API',
-        version: '1.0.0'
+        version: '1.0.001'
       }
     }
   }))
