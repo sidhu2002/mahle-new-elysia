@@ -233,6 +233,55 @@ export const queryRouter = new Elysia({ prefix: '/query' })
     }
   })
 
+  .post('/session/vehicleData', async ({ body }) => {
+    try {
+      const result = await queryController.getVehicleInformation(body?.session_id as string);
+  
+      console.log(result?.Rows?.length)
+      if (!result?.Rows?.length) {
+        return {
+          success: false,
+          error: 'No session data found for the provided session ID.'
+        };
+      }
+  
+      // Extract headers from the first row
+      const headers = result.Rows[0].Data?.map(col => col.VarCharValue || '') || [];
+  
+      // Map each row to a record using the headers
+      const rows = result.Rows.slice(1).map((row: AthenaRow) => {
+        const rowData: Record<string, string | null> = {};
+  
+        headers.forEach((header, index) => {
+          const col = row.Data?.[index];
+          rowData[header] = col?.VarCharValue ?? null; // Explicitly allow null if value missing
+        });
+  
+        return rowData;
+      });
+  
+      return {
+        success: true,
+        data: rows,
+        metadata: {
+          total: rows.length,
+          session_id: body?.session_id
+        }
+      };
+    } catch (error: any) {
+      console.error('Error fetching vehicle data:', error);
+      return {
+        success: false,
+        error: error?.message || 'Unknown error occurred while fetching vehicle data.'
+      };
+    }
+  }, {
+    detail: {
+      summary: 'Get all vehicle data for a session ID',
+      tags: ['Query']
+    }
+  })
+  
   // Get screen navigation data by session_id
   .post('/screen-navigation', async ({ body }) => {
     try {

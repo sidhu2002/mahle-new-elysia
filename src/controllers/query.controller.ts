@@ -20,7 +20,13 @@ export class QueryController {
   }
 
   async getAllSessionIds() {
-    const query = `SELECT DISTINCT session_id FROM "raw"."datacollection" ORDER BY session_id;`
+    const query = `SELECT session_id FROM "raw"."vehicleinformation" ORDER BY load_ts desc `
+    return await athenaService.executeQuery(query)
+  }
+
+  async getVehicleInformation(session_id : string) {
+    const query = `SELECT * FROM "raw"."vehicleinformation" WHERE session_id = '${session_id}' ORDER BY load_ts desc LIMIT 1000`
+    
     return await athenaService.executeQuery(query)
   }
 
@@ -35,7 +41,7 @@ export class QueryController {
   }
 
   async getEventLoggingData(sessionId: string, limit: number = 1000, offset: number = 0) {
-    const query = `SELECT * FROM "raw"."eventlogging" WHERE session_id = '${sessionId}' LIMIT ${limit} ;`
+    const query = `SELECT * FROM "raw"."eventlogging" WHERE session_id = '${sessionId}' ORDER BY tx_timestamp ASC LIMIT 1000 ;`
     console.log(`Executing query for session_id: ${sessionId}, limit: ${limit}, offset: ${offset}`);
     return await athenaService.executeQuery(query)
   }
